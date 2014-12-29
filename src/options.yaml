@@ -1,0 +1,51 @@
+name: easy-view-engine
+
+url:
+  http://fnobi.github.io/easy-view-engine/demo
+
+repository:
+  git://github.com/fnobi/easy-view-engine.git
+
+title:
+  easy-view-engine
+
+description:
+  Simple template engine for web front end.
+
+keywords: []
+
+favicon_url: ''
+
+viewport: 
+  - width=device-width
+  - initial-scale=1.0
+  - maximum-scale=1.0
+  - user-scalable=0
+
+ios_icon_url: ''
+
+facebook_app_id: ''
+
+ogp_type: 'website'
+
+ogp_image_url: ''
+ogp_image_width: 0
+ogp_image_height: 0
+
+
+sns:
+  twitter:
+    sharetext:
+      Simple template engine for web front end.      
+    sharehashtag: []
+
+  facebook:
+    app_id: ''
+    sharetext:
+      Simple template engine for web front end.
+
+ogp:
+  image: 
+    url: http://fnobi.github.io/easy-view-engine/demo/img/ogp-icon.png
+    width: 300
+    height: 300
