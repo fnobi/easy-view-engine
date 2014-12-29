@@ -2,12 +2,12 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8" />
-<title><%= name %> demo</title>
+<title>easy-view-engine demo</title>
 </head>
 <body>
 <section class="content">
-<h1 class="content__title"><%= name %></h1>
-<h2 class="content__description"><%= description %></h2>
+<h1 class="content__title">easy-view-engine</h1>
+<h2 class="content__description">Simple template engine for web front end.</h2>
 <p>
 <a href="http://fnobi.github.io/easy-view-engine/demo">http://fnobi.github.io/easy-view-engine/demo</a>
 </p>
@@ -34,7 +34,24 @@ text:<br />
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="../easyViewEngine.js"></script>
 <script>
-<% include ../../js/easyViewEngineDemo.js %>
+function generateLink () {
+    var opts = {
+        url: $('#input-url').val(),
+        text: $('#input-text').val()
+    };
+
+    var template = $('#template-sample').html();
+    var $el = $(easyViewEngine(template, opts));
+    $(document.body).append($el);
+}
+
+$('#generator').on('submit', function (e) {
+    e.preventDefault();
+    generateLink();
+});
+
+generateLink();
+
 </script>
 </body>
 </html>

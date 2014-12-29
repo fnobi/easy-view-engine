@@ -1,3 +1,16 @@
+# easy-view-engine
+
+Simple template engine for web front end.
+
+## install
+
+```
+bower install easy-view-engine
+```
+
+## usage
+
+```javascript
 function generateLink () {
     var opts = {
         url: $('#input-url').val(),
@@ -15,3 +28,5 @@ $('#generator').on('submit', function (e) {
 });
 
 generateLink();
+
+```
