@@ -1,7 +1,7 @@
 {
   "name": "easy-view-engine",
   "description": "Simple template engine for web front end.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "main": "src/js/easyViewEngine.js",
   "dependencies": {
     "jquery": "~1.10.*"
