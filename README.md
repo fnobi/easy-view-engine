@@ -8,6 +8,10 @@ Simple template engine for web front end.
 bower install easy-view-engine
 ```
 
+## demo
+
+http://fnobi.github.io/easy-view-engine/demo/
+
 ## usage
 
 ```javascript
