@@ -2,7 +2,7 @@ var easyViewEngine = function (source, opts) {
     source = source || '';
     opts = opts || {};
 
-    var regexp = /\{\{(=|if|endif):?([a-z_]*)\}\}/;
+    var regexp = /\{\{(-|=|if|endif):?([a-z_]*)\}\}/;
     var mark = -1;
 
     function esc (str) {
@@ -15,10 +15,15 @@ var easyViewEngine = function (source, opts) {
 
     function processTag (index, command, target) {
         var value = '';
+        var raw = false;
+        var undef;
         if (command == '=') {
-            value = opts[target] || '';
+            value = (opts[target] === undef) ? '' : opts[target];
+        } else if (command == '-') {
+            value = (opts[target] === undef) ? '' : opts[target];
+            raw = true;
         } else if (command == 'if') {
-            if (!opts[target]) {
+            if (opts[target] === undef) {
                 mark = index;
             }
         } else if (command == 'endif') {
@@ -27,7 +32,9 @@ var easyViewEngine = function (source, opts) {
                 mark = -1;
             }
         }
-        value = esc(value);
+        if (!raw) {
+            value = esc(value);
+        }
         source = source.replace(regexp, value);
     }
 
@@ -39,4 +46,3 @@ var easyViewEngine = function (source, opts) {
 
     return source;
 };
-
