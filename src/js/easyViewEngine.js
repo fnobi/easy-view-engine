@@ -25,6 +25,12 @@ var easyViewEngine = function (source, opts) {
         return ctx[key];
     }
 
+    function assertNest (type) {
+        if (!nest.length || nest[nest.length - 1].type != type) {
+            throw Error('parse error: unexpected end' + type);
+        }
+    }
+
     function processTag (index, command, target) {
         var value = '';
         var raw = false;
@@ -42,9 +48,7 @@ var easyViewEngine = function (source, opts) {
                 flag: !!evl(opts, target)
             });
         } else if (command == 'endif') {
-            if (!nest.length || nest[nest.length - 1].type != 'if') {
-                throw Error('parse error: unexpected endif');
-            }
+            assertNest('if');
             lastNest = nest.pop();
             if (!lastNest.flag) {
                 source = source.slice(0, lastNest.index) + source.slice(index);
