@@ -3,7 +3,7 @@ var easyViewEngine = function (source, opts) {
     opts = opts || {};
 
     var regexp = /\{\{(-|=|if|endif):?([a-zA-Z\._]*)\}\}/;
-    var mark = -1;
+    var nest = [];
 
     function esc (str) {
         return String(str)
@@ -15,22 +15,20 @@ var easyViewEngine = function (source, opts) {
 
     function evl (ctx, key) {
         var undef;
-        if (!ctx || ctx[key] === undef) {
-            return '';
-        }
         if (key.indexOf('.') >= 0) {
             var parts = key.split('.');
-            console.log(parts);
             return evl(ctx[parts[0]], parts[1]);
+        }
+        if (!ctx || ctx[key] === undef) {
+            return '';
         }
         return ctx[key];
     }
 
     function processTag (index, command, target) {
-        console.log(target);
-
         var value = '';
         var raw = false;
+        var lastNest = null;
         var undef;
         if (command == '=') {
             value = evl(opts, target);
@@ -38,13 +36,18 @@ var easyViewEngine = function (source, opts) {
             value = evl(opts, target);
             raw = true;
         } else if (command == 'if') {
-            if (opts[target] === undef) {
-                mark = index;
-            }
+            nest.push({
+                index: index,
+                type: 'if',
+                flag: !!evl(opts, target)
+            });
         } else if (command == 'endif') {
-            if (mark >= 0) {
-                source = source.slice(0, mark) + source.slice(index);
-                mark = -1;
+            if (!nest.length || nest[nest.length - 1].type != 'if') {
+                throw Error('parse error: unexpected endif');
+            }
+            lastNest = nest.pop();
+            if (!lastNest.flag) {
+                source = source.slice(0, lastNest.index) + source.slice(index);
             }
         }
         if (!raw) {

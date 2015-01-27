@@ -36,4 +36,19 @@ describe('easy-view-engine', function () {
         var result = easyViewEngine(src, param);
         expect(result).to.equal('1');
     });
+    it('handle nested if statement', function () {
+        var src = [
+            '{{if:user}}',
+            '{{if:user.name}}<div>{{=:user.name}}</div>{{endif:user.name}}',
+            '{{if:user.age}}<div>{{=:user.age}}</div>{{endif:user.age}}',
+            '{{endif:user}}'
+        ].join('');
+        var param = {
+            user: {
+                name: 'hoge'
+            }
+        };
+        var result = easyViewEngine(src, param);
+        expect(result).to.equal('<div>hoge</div>');
+    });
 });
