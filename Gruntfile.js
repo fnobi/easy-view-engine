@@ -9,6 +9,7 @@ module.exports = function (grunt) {
     var DEMO = 'demo';
 
     var useEjs = true;
+    var useTest = true;
 
     // js library alias
     var alias = {
@@ -123,7 +124,30 @@ module.exports = function (grunt) {
         config.esteWatch['ejs'] = function () { return 'ejs:' + DEV; };
     
     }
+
     
+    // test
+    if (useTest) {
+        grunt.loadNpmTasks('grunt-mocha-html');
+        grunt.loadNpmTasks('grunt-mocha-phantomjs');
+    
+        config.mocha_html = config.mocha_html || {};
+        config.mocha_html[DEV] = {
+            src   : [ path.resolve(devSitePath, JS, 'easyViewEngine.js') ],
+            test  : [ TEST + '/*-test.js' ],
+            assert : 'chai'
+        };
+        devTasks.push('mocha_html');
+    
+        config.mocha_phantomjs =  {
+            all: [ TEST + '/*.html' ]
+        };
+    
+        grunt.registerTask('test', ['mocha_phantomjs']);
+    
+    }
+
+
     // html validation
     {
         grunt.loadNpmTasks('grunt-html-validation');
