@@ -2,7 +2,7 @@ var easyViewEngine = function (source, opts) {
     source = source || '';
     opts = opts || {};
 
-    var regexp = /\{\{(-|=|if|endif):?([a-z_]*)\}\}/;
+    var regexp = /\{\{(-|=|if|endif):?([a-zA-Z\._]*)\}\}/;
     var mark = -1;
 
     function esc (str) {
@@ -13,14 +13,29 @@ var easyViewEngine = function (source, opts) {
             .replace(/"/g, '&quot;');
     }
 
+    function evl (ctx, key) {
+        var undef;
+        if (!ctx || ctx[key] === undef) {
+            return '';
+        }
+        if (key.indexOf('.') >= 0) {
+            var parts = key.split('.');
+            console.log(parts);
+            return evl(ctx[parts[0]], parts[1]);
+        }
+        return ctx[key];
+    }
+
     function processTag (index, command, target) {
+        console.log(target);
+
         var value = '';
         var raw = false;
         var undef;
         if (command == '=') {
-            value = (opts[target] === undef) ? '' : opts[target];
+            value = evl(opts, target);
         } else if (command == '-') {
-            value = (opts[target] === undef) ? '' : opts[target];
+            value = evl(opts, target);
             raw = true;
         } else if (command == 'if') {
             if (opts[target] === undef) {

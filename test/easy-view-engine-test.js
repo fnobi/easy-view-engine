@@ -26,4 +26,14 @@ describe('easy-view-engine', function () {
         var result = easyViewEngine(src, param);
         expect(result).to.equal('&lt;a href=&quot;http://fnobi.com/&quot;&gt;fnobi.com&lt;/a&gt;<a href="http://fnobi.com/">fnobi.com</a>');
     });
+    it('extend sub object', function () {
+        var src = '{{=:hoge.moge}}';
+        var param = {
+            hoge: {
+                moge: 1
+            }
+        };
+        var result = easyViewEngine(src, param);
+        expect(result).to.equal('1');
+    });
 });
