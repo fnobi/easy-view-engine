@@ -2,7 +2,7 @@ var easyViewEngine = function (source, opts) {
     source = source || '';
     opts = opts || {};
 
-    var regexp = /\{\{(-|=|if|endif):?([a-zA-Z\._]*)\}\}/;
+    var regexp = /\{\{(-|=|if|endif|each|endeach):?([a-zA-Z\._]*)(:[a-zA-Z_]+)?\}\}/;
     var nest = [];
 
     function esc (str) {
@@ -31,10 +31,11 @@ var easyViewEngine = function (source, opts) {
         }
     }
 
-    function processTag (index, matchLength, command, target) {
+    function processTag (index, matchLength, command, target, holder) {
         var value = '';
         var raw = false;
         var lastNest = null;
+        var scope, result;
         var undef;
         if (command == '=') {
             value = evl(opts, target);
@@ -52,8 +53,34 @@ var easyViewEngine = function (source, opts) {
             assertNest('if');
             lastNest = nest.pop();
 
-            var scope = lastNest.scope.slice(0, index - source.length);
-            var result = lastNest.flag ? easyViewEngine(scope, opts) : '';
+            scope = lastNest.scope.slice(0, index - source.length);
+            result = lastNest.flag ? easyViewEngine(scope, opts) : '';
+            source = [
+                source.slice(0, lastNest.index),
+                result,
+                source.slice(index)
+            ].join('');
+        } else if (command == 'each') {
+            nest.push({
+                index: index,
+                type: 'each',
+                scope: source.slice(index + matchLength),
+                ctx: evl(opts, target),
+                holder: holder.slice(1)
+            });
+        } else if (command == 'endeach') {
+            assertNest('each');
+            lastNest = nest.pop();
+
+            scope = lastNest.scope.slice(0, index - source.length);
+            result = '';
+            for (var i = 0; i < lastNest.ctx.length; i++) {
+                (function () {
+                    var ctx = opts;
+                    ctx[lastNest.holder] = lastNest.ctx[i];
+                    result += easyViewEngine(scope, ctx);
+                })();
+            }
             source = [
                 source.slice(0, lastNest.index),
                 result,
@@ -69,7 +96,13 @@ var easyViewEngine = function (source, opts) {
     var matchData;
     while (source.match(regexp)) {
         matchData = source.match(regexp);
-        processTag(matchData.index, matchData[0].length, matchData[1], matchData[2]);
+        processTag(
+            matchData.index,
+            matchData[0].length,
+            matchData[1],
+            matchData[2],
+            matchData[3]
+        );
     }
 
     return source;

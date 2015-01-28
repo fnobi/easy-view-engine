@@ -51,4 +51,12 @@ describe('easy-view-engine', function () {
         var result = easyViewEngine(src, param);
         expect(result).to.equal('<div>hoge</div>');
     });
+    it('handle each statement', function () {
+        var src = '{{each:numbers:num}}{{=:num}} -> {{endeach:numbers:num}}';
+        var param = {
+            numbers: [ 1, 1, 2, 3, 5, 8, 13, 21 ]
+        };
+        var result = easyViewEngine(src, param);
+        expect(result).to.equal('1 -> 1 -> 2 -> 3 -> 5 -> 8 -> 13 -> 21 -> ');
+    });
 });
