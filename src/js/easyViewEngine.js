@@ -31,7 +31,7 @@ var easyViewEngine = function (source, opts) {
         }
     }
 
-    function processTag (index, command, target) {
+    function processTag (index, matchLength, command, target) {
         var value = '';
         var raw = false;
         var lastNest = null;
@@ -45,14 +45,20 @@ var easyViewEngine = function (source, opts) {
             nest.push({
                 index: index,
                 type: 'if',
-                flag: !!evl(opts, target)
+                flag: !!evl(opts, target),
+                scope: source.slice(index + matchLength)
             });
         } else if (command == 'endif') {
             assertNest('if');
             lastNest = nest.pop();
-            if (!lastNest.flag) {
-                source = source.slice(0, lastNest.index) + source.slice(index);
-            }
+
+            var scope = lastNest.scope.slice(0, index - source.length);
+            var result = lastNest.flag ? easyViewEngine(scope, opts) : '';
+            source = [
+                source.slice(0, lastNest.index),
+                result,
+                source.slice(index)
+            ].join('');
         }
         if (!raw) {
             value = esc(value);
@@ -63,7 +69,7 @@ var easyViewEngine = function (source, opts) {
     var matchData;
     while (source.match(regexp)) {
         matchData = source.match(regexp);
-        processTag(matchData.index, matchData[1], matchData[2]);
+        processTag(matchData.index, matchData[0].length, matchData[1], matchData[2]);
     }
 
     return source;
